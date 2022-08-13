@@ -1,99 +1,94 @@
-import { useCallback, useEffect, useState } from "react";
-import Timer from "./components/Timer";
-import useTimer from "./hooks/useTimer";
-import useWords from "./hooks/useWords";
-
-interface Progress {
-  started: boolean;
-  total: number;
-  current: number;
-  incorrect: number;
-  history: Record<number, boolean>;
-}
+import { useEffect, useState } from "react";
+import jojoWords from "./assets/words.json";
+import { shuffle } from "./utils";
 
 function App() {
-  const words = useWords();
-
-  const [{ started, total, current, history, incorrect }, setProgress] =
-    useState<Progress>({
-      started: false,
-      incorrect: 0,
-      total: 0,
-      current: 0,
-      history: {},
-    });
-
-  const { time, finished } = useTimer(60, started);
+  const [timer, setTimer] = useState(60);
+  const [words, setWords] = useState<string[]>([]);
+  const [started, setStarted] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [currWord, setCurrWord] = useState(0);
+  const [wordHistory, setWordHistory] = useState<Record<number, boolean>>({});
+  const [progress, setProgress] = useState({
+    correct: 0,
+    incorrect: 0,
+    total: 0,
+  });
 
   const validate = (input: string) => {
-    const currentWord = words[current];
+    const element = document.getElementById(`word-${currWord}`);
 
-    const element = document.getElementById(`word-${currentWord}`);
+    element?.scrollIntoView();
 
-    element?.scrollIntoView({
-      block: "start",
-    });
-
-    const correct = input === words[current];
-
-    setProgress({
-      started,
-      total: total + 1,
-      current: current + 1,
-      incorrect: incorrect + Number(!correct),
-      history: {
-        ...history,
-        [current]: correct,
-      },
-    });
+    setCurrWord((currWord) => currWord + 1);
+    setProgress((progress) =>
+      input === words[currWord]
+        ? {
+            ...progress,
+            correct: progress.correct + 1,
+            total: progress.total + 1,
+          }
+        : {
+            ...progress,
+            incorrect: progress.incorrect + 1,
+            total: progress.total + 1,
+          }
+    );
+    setWordHistory((wordHistory) => ({
+      ...wordHistory,
+      [currWord]: input === words[currWord],
+    }));
   };
 
-  const wordColor = (index: number) =>
-    index === current
-      ? "bg-[#006dfb]"
-      : typeof history[index] === "boolean"
-      ? history[index]
-        ? "bg-green-500"
-        : "bg-red-500"
-      : "";
+  useEffect(() => {
+    let interval: number;
 
-  const onKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLInputElement>) => {
-      !started &&
-        setProgress((prev) => ({
-          ...prev,
-          started: true,
-        }));
+    if (started) {
+      setTimer(60);
+      interval = setInterval(() => {
+        setTimer((timer) => {
+          if (timer === 1) {
+            clearInterval(interval);
+            setTimer(0);
+            setStarted(false);
+          }
 
-      if (event.key === " ") {
-        event.preventDefault();
-        validate(event.currentTarget.value);
-        event.currentTarget.value = "";
-      }
-    },
-    [started]
-  );
+          return timer - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [started]);
 
   useEffect(() => {
-    if (started && finished)
-      setProgress((prev) => ({
-        ...prev,
-        started: false,
-      }));
-  }, [started, finished]);
+    setWords(shuffle(jojoWords));
+
+    return () => {
+      setWords([]);
+    };
+  }, []);
 
   return (
     <div className="h-screen w-full flex items-center justify-center">
       <div className="flex flex-col items-center justify-center h-full w-1/2 mb-48">
-        <div className="bg-[#191A19] p-4 h-[18%] rounded-xl">
-          <div className=" max-h-full overflow-hidden">
+        <div className="bg-[#191A19] p-4 h-[18%] rounded-xl max-h-full overflow-hidden">
+          <div className="p-4">
             {words.slice(0, 300).map((w, index) => (
               <div
                 id={`word-${index}`}
                 key={index}
-                className={`${wordColor(
-                  index
-                )} inline-block text-white text-2xl font-bold m-2 p-2 px-4 rounded-xl`}
+                className={`${
+                  index === currWord
+                    ? "bg-[#006dfb]"
+                    : typeof wordHistory[index] === "boolean"
+                    ? wordHistory[index]
+                      ? "bg-green-500"
+                      : "bg-red-500"
+                    : ""
+                } inline-block text-white text-2xl font-bold m-2 p-2 px-4 rounded-xl `}
               >
                 {w}
               </div>
@@ -103,10 +98,30 @@ function App() {
         <div className="mt-4 relative bg-[#191A19] p-2 rounded-xl w-full flex items-center justify-center">
           <input
             type="text"
-            onKeyDown={onKeyDown}
+            onKeyDown={(e) => {
+              !started && setStarted(true);
+
+              if (e.key === " ") {
+                e.preventDefault();
+                validate(e.currentTarget.value);
+                e.currentTarget.value = "";
+              }
+            }}
             className="w-1/3 float-none py-2 px-3 rounded-xl font-medium text-2xl"
           />
-          <Timer started={started} time={time} />
+          <div
+            className={`right-0 absolute mr-4 text-2xl p-2 px-3 rounded-xl font-medium text-white ${
+              !started
+                ? "bg-[#006dfb]"
+                : timer < 30 && timer > 10
+                ? "bg-yellow-500"
+                : timer < 10
+                ? "bg-red-400"
+                : "bg-green-400"
+            }`}
+          >
+            {timer}
+          </div>
         </div>
       </div>
     </div>
