@@ -1,10 +1,10 @@
+import type { Progress } from "./types";
 import { useCallback, useEffect, useState } from "react";
 import Timer from "./components/Timer";
 import Input from "./components/Input";
 import useTimer from "./hooks/useTimer";
 import useWords from "./hooks/useWords";
 import Words from "./hooks/Words";
-import type { Progress } from "./types";
 
 function App() {
   const words = useWords();
@@ -24,7 +24,9 @@ function App() {
     (input: string) => {
       const currentWord = words[current];
 
-      const element = document.getElementById(`word-${currentWord}`);
+      const element = document.getElementById(`word-${current}`);
+
+      console.log(element);
 
       element?.scrollIntoView({
         block: "start",
