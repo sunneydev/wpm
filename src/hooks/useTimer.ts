@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useTimer = (startingTime: number, started: boolean) => {
+const useTimer = (startingTime: number, started: boolean, correct: number) => {
   const [time, setTime] = useState(startingTime);
   const [finished, setFinished] = useState(false);
 
@@ -26,6 +26,7 @@ const useTimer = (startingTime: number, started: boolean) => {
   return {
     time,
     finished,
+    wpm: Math.round((correct / (60 - time)) * 60) || 0,
   };
 };
 

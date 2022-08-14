@@ -6,3 +6,9 @@ html,
 body {
   background-color: #161d26;
 }
+
+@layer components {
+  .word {
+    @apply inline-block text-white text-2xl font-bold m-2 p-2 px-4 rounded-xl;
+  }
+}

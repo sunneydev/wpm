@@ -5,6 +5,7 @@ import Input from "./components/Input";
 import useTimer from "./hooks/useTimer";
 import useWords from "./hooks/useWords";
 import Words from "./hooks/Words";
+import Badge from "./components/Badge";
 
 function App() {
   const words = useWords();
@@ -18,15 +19,19 @@ function App() {
       history: {},
     });
 
-  const { time, finished } = useTimer(60, started);
+  useEffect(() => {
+    const seconds = 5;
+    const words = 10;
+    const wpm = (words / seconds) * 60;
+  }, [started, total, incorrect]);
+
+  const { time, wpm, finished } = useTimer(60, started, total - incorrect);
 
   const validate = useCallback(
     (input: string) => {
       const currentWord = words[current];
 
       const element = document.getElementById(`word-${current}`);
-
-      console.log(element);
 
       element?.scrollIntoView({
         block: "start",
@@ -76,6 +81,11 @@ function App() {
   return (
     <div className="h-screen w-full flex items-center justify-center">
       <div className="flex flex-col items-center justify-center h-full w-1/2 mb-48">
+        <div className="w-full text-white flex gap-2 mb-2">
+          <Badge color="green">{wpm}</Badge>
+          <Badge color="blue">{total}</Badge>
+          <Badge color="red">{incorrect}</Badge>
+        </div>
         <div className="bg-[#191A19] p-4 h-[18%] rounded-xl">
           <Words current={current} history={history} words={words} />
         </div>

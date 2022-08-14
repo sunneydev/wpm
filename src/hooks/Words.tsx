@@ -7,24 +7,19 @@ const Words: React.FC<
   }
 > = ({ history, current, words }) => {
   const wordColor = (index: number) =>
-    index === current
+    "word " +
+    (index === current
       ? "bg-[#006dfb]"
       : typeof history[index] === "boolean"
       ? history[index]
         ? "bg-green-500"
         : "bg-red-500"
-      : "";
+      : "");
 
   return (
     <div className="max-h-full overflow-hidden">
       {words.slice(0, 300).map((w, index) => (
-        <div
-          id={`word-${index}`}
-          key={index}
-          className={`${wordColor(
-            index
-          )} inline-block text-white text-2xl font-bold m-2 p-2 px-4 rounded-xl`}
-        >
+        <div id={`word-${index}`} key={index} className={wordColor(index)}>
           {w}
         </div>
       ))}
