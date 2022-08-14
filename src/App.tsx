@@ -19,12 +19,6 @@ function App() {
       history: {},
     });
 
-  useEffect(() => {
-    const seconds = 5;
-    const words = 10;
-    const wpm = (words / seconds) * 60;
-  }, [started, total, incorrect]);
-
   const { time, wpm, finished } = useTimer(60, started, total - incorrect);
 
   const validate = useCallback(
