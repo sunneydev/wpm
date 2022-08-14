@@ -1,12 +1,12 @@
 import type { Progress } from "./types";
 import { useCallback, useEffect, useState } from "react";
+import Restart from "./components/Restart";
 import Timer from "./components/Timer";
 import Input from "./components/Input";
 import Badge from "./components/Badge";
 import useTimer from "./hooks/useTimer";
 import useWords from "./hooks/useWords";
 import Words from "./hooks/Words";
-import Restart from "./components/Restart";
 
 function App() {
   const words = useWords();
@@ -68,7 +68,7 @@ function App() {
           started: true,
         }));
 
-      if (event.key === " ") {
+      if (event.key === " " || event.key === "Enter") {
         event.preventDefault();
         validate(event.currentTarget.value);
         event.currentTarget.value = "";
