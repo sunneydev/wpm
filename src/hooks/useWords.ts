@@ -6,7 +6,7 @@ const useWords = () => {
   const [words, setWords] = useState<string[]>([]);
 
   useEffect(() => {
-    setWords(shuffle(someWords));
+    setWords(shuffle(someWords.filter((word) => word.length > 2 && word.length < 5)));
 
     return () => {
       setWords([]);

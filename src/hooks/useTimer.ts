@@ -5,7 +5,11 @@ const useTimer = (startingTime: number, started: boolean, correct: number) => {
   const [finished, setFinished] = useState(false);
 
   useEffect(() => {
-    if (!started) return;
+    if (!started) {
+      setFinished(false);
+      setTime(startingTime);
+      return;
+    }
 
     const interval = setInterval(() => {
       setTime((time) => {
@@ -26,7 +30,7 @@ const useTimer = (startingTime: number, started: boolean, correct: number) => {
   return {
     time,
     finished,
-    wpm: Math.round((correct / (60 - time)) * 60) || 0,
+    wpm: Math.round(time !== 60 ? (correct / (60 - time) * 60) || 0 : correct),
   };
 };
 
