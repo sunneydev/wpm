@@ -103,7 +103,7 @@ function App() {
         </div>
         <div className="mt-4 relative bg-[#191A19] p-2 rounded-xl w-full flex items-center justify-center">
           <Input onKeyDown={onKeyDown} />
-          <Restart visible={!finished} onRestart={restart} />
+          <Restart visible onRestart={restart} />
         </div>
       </div>
     </div>
