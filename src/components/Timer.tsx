@@ -8,10 +8,10 @@ const Timer: React.FC<{
     !started
       ? "bg-[#006dfb]"
       : time < 30 && time > 10
-      ? "bg-yellow-500"
-      : time < 10
-      ? "bg-red-400"
-      : "bg-green-400";
+      ? "bg-[#FBFF00]"
+      : time <= 10
+      ? "bg-red-500"
+      : "bg-green-500";
 
   return (
     <div
